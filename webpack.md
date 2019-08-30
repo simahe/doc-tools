@@ -1,3 +1,5 @@
+
+
 webpack文档地址
 
 来源 https://www.webpackjs.com
@@ -30,16 +32,13 @@ npm start
 
 
 - chunk 数据块
-
 - vendor 供应商 ( 第三方库)
-
 - loader 装载机  leider  louder  
-
 - *bundler*  打包机  
 - *module*   摸丢 嘛紧
 - plugins  插件
-
 - compiler  编译器
+- resolve 解析
 
 
 
@@ -432,7 +431,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 有三种常用的代码分离方法：
 
 - 入口起点：使用 [`entry`](https://www.webpackjs.com/configuration/entry-context) 配置手动地分离代码。
-- 防止重复：使用 [`CommonsChunkPlugin`](https://www.webpackjs.com/plugins/commons-chunk-plugin) 去重和分离 chunk。
+- 防止重复：使用 SplitChunksPlugin
 - 动态导入：通过模块的内联函数调用来分离代码。
 
 ##### 入口起点(entry points)
@@ -449,44 +448,26 @@ entry: {
 将公共的依赖模块提取到已有的入口 chunk 中，或者提取到一个新生成的 chunk。
 
 ```diff
-webpack.config.js
- const path = require('path');
-+ const webpack = require('webpack');
-  module.exports = {
-    plugins: [
-      new HTMLWebpackPlugin({
-        title: 'Code Splitting'
--     })
-+     }),
-+     new webpack.optimize.CommonsChunkPlugin({
-+       name: 'common' // 指定公共 bundle 的名称。
-+     })
-    ],
-
-***********************************************************
-最新版本
-const webpack = require('webpack');
-//optimization与entry/plugins同级
-optimization: {
-        splitChunks: {
-            cacheGroups: {
-                commons: {
-                    name: "commons",
-                    chunks: "initial",
-                    minChunks: 2
-                }
-            }
+splitChunks: {
+    chunks: "async",
+    minSize: 30000,
+    minChunks: 1,
+    maxAsyncRequests: 5,
+    maxInitialRequests: 3,
+    automaticNameDelimiter: '~',
+    name: true,
+    cacheGroups: {
+        vendors: {
+            test: /[\\/]node_modules[\\/]/,
+            priority: -10
+        },
+    default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true
         }
-    },
-
-***********************************************************
-以下是由社区提供的，一些对于代码分离很有帮助的插件和 loaders：
-
-ExtractTextPlugin: 用于将 CSS 从主应用程序中分离。
-bundle-loader: 用于分离代码和延迟加载生成的 bundle。
-promise-loader: 类似于 bundle-loader ，但是使用的是 promises。
-
-CommonsChunkPlugin 插件还可以通过使用显式的 vendor chunks 功能，从应用程序代码中分离 vendor 模块。
+    }
+}
 ```
 
 ##### 动态导入(dynamic imports)
@@ -614,6 +595,34 @@ npm install --save-dev webpack lodash
 ```
 
 
+
+# 渐进式网络应用程序
+
+```
+npm install http-server --save-dev
+
+{
+  "scripts": {
++    "start": "http-server dist"
+  },
+
+}
+```
+
+运行命令 `npm run build` 来构建你的项目。然后运行命令 `npm start`。这应该输
+
+```bash
+> http-server dist
+
+启动 http-server，服务目录是 dist
+可以访问：
+  http://xx.x.x.x:8080
+  http://127.0.0.1:8080
+  http://xxx.xxx.x.x:8080
+按下 CTRL-C 停止服务
+```
+
+如果你打开浏览器访问 `http://localhost:8080` (即 `http://127.0.0.1`)，你应该会看到在 `dist` 目录创建出服务，并可以访问 webpack 应用程序。如果停止服务器然后刷新，则 webpack 应用程序不再可访问。
 
 
 
@@ -784,13 +793,13 @@ npm install --save-dev cross-env
   },
   
  一些说明 start 和 starton相同 默认  --config  webpack.config.js
- 改变 webpack.config.js的位置名称  --config=config/webpack-dev.js
+ 改变webpack位置、名字放在config文件夹下面，  --config=config/webpack-dev.js
  cross-env 就可以设置参数了，但是要在webpack.config.js做一下设置
 plugins: [
     new webpack.DefinePlugin({
       'process.env': {
            'BUILD_ARGVS': JSON.stringify(process.env.BUILD_ARGVS),
-          'NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+              'NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       }
       }
   }),
@@ -798,4 +807,165 @@ plugins: [
 然后你才能在工程js里面获取
 const NODE_ENV = process.env.NODE_ENV;
 const BUILD_ARGVS = process.env.BUILD_ARGVS;
+```
+
+```
+完整的scripts
+"scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack-dev-server  --config  config/webpack.config.js  --open",
+    "starton": "webpack-dev-server  --config=config/webpack.config.js --open",
+
+    "dev:dev":"cross-env BUILD_ARGVS=dev NODE_ENV=devlelop webpack-dev-server --config=config/webpack.dev.js  --open" ,
+    "dev:test": "cross-env BUILD_ARGVS=test NODE_ENV=devlelop webpack-dev-server --config=config/webpack.dev.js  --open",
+    "dev:uat": "cross-env BUILD_ARGVS=uat NODE_ENV=devlelop webpack-dev-server --config=config/webpack.dev.js  --open",
+    "dev:pro": "cross-env BUILD_ARGVS=pro NODE_ENV=devlelop webpack-dev-server --config=config/webpack.dev.js  --open",
+  
+    "build:dev": "cross-env BUILD_ARGVS=dev NODE_ENV=production webpack --config=config/webpack.prod.js  --progress --colors",
+    "build:test": "cross-env BUILD_ARGVS=test NODE_ENV=production webpack --config=config/webpack.prod.js  --progress --colors",
+    "build:uat": "cross-env BUILD_ARGVS=uat NODE_ENV=production webpack -config=config/webpack.prod.js  --progress --colors",
+    "build:prod": "cross-env BUILD_ARGVS=prod NODE_ENV=production webpack --config=config/webpack.prod.js  --progress --colors"
+
+  },
+```
+
+# optimize-css-assets-webpack-plugin
+
+用于优化或者压缩CSS资源，一般生产使用
+
+```csharp
+yarn add -D optimize-css-assets-webpack-plugin
+yarn add optimize-css-assets-webpack-plugin
+```
+
+这个插件可以接受下列配置(均为可选)：
+
+- **assetNameRegExp**: 正则表达式，用于匹配需要优化或者压缩的资源名。默认值是 **/\.css$/g**
+- **cssProcessor**: 用于压缩和优化CSS 的处理器，默认是 cssnano.这是一个函数，应该按照 **cssnano.process** 接口(接受一个CSS和options参数，返回一个Promise)
+- **canPrint**: {bool} 表示插件能够在console中打印信息，默认值是true
+
+```javascript
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+
+optimization: {
+        minimize: true,
+        minimizer: [
+            UglifyJsPluginconfig,
+            new OptimizeCSSAssetsPlugin({
+                cssProcessorOptions: {
+                    safe: true,
+                    autoprefixer: false
+                },
+            })
+        ],
+        runtimeChunk: false
+    }
+```
+
+# UglifyjsWebpackPlugin
+
+uglifyJsPlugin 用来对js文件进行压缩，从而减小js文件的大小，加速load速度。
+uglifyJsPlugin会拖慢webpack的编译速度，所有建议在开发简单将其关闭，部署的时候再将其打开。
+
+```bash
+npm install --save-dev optimize-css-assets-webpack-plugin
+```
+
+###### 用法
+
+**webpack.config.js**
+
+```js
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+
+module.exports = {
+  plugins: [
+     new UglifyJsPlugin({
+    cache: true,
+    parallel: true,
+    uglifyOptions: {
+        compress: {
+            warnings: false,
+            // drop_console: true,
+            collapse_vars: true,
+            reduce_vars: true,
+        }
+    }
+	})
+  ]
+}
+```
+
+## **AutoDllPlugin**
+
+ **DllPlugin插件**能够快速打包，能把第三方依赖的文件能提前进行预编译打包到一个文件里面去。提高了构建速度。因为很多第三方插件我们并不需要改动它，所以我们想这些第三方库在我们每次编译的时候不要再次构建它就好。
+
+```
+npm install --save-dev autodll-webpack-plugin
+```
+
+```
+ module.exports = {
+  plugins: [
+    new HtmlWebpackPlugin({
+      inject: true,
+      template: './index.html' // 模版文件
+    }),
+    new AutoDllPlugin({
+      inject: true,
+      filename: '[name]_[hash].js',
+      entry: {
+        vendor: [
+          'jquery'
+          // .... 更多插件
+        ]
+      }
+    })
+  ]
+}
+```
+
+##  ngnix 配置
+
+```
+多页面的
+server {
+    listen 80;
+    server_name platform.weilaijishi.cn localhost;
+    access_log  /var/log/nginx/mall-activity.weilaijishi.cn_access.log  access;
+    root /home/webapp/mall-activity/dist;
+    index index.html index.htm index.nginx-debian.html;
+    location / {
+        try_files $uri /index/index.html;
+    }
+    location /index/ {
+        try_files $uri /index/index.html;
+    }
+    location /login/ {
+        try_files $uri /login/index.html;
+    }
+    location /system/ {
+        try_files $uri /system/index.html;
+    }
+    location /store/ {
+        try_files $uri /store/index.html;
+    }
+}
+```
+
+```nginx
+server {
+  location / {
+    proxy_pass http://127.0.0.1:8080;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    error_page 502 @start-webpack-dev-server;
+  }
+
+  location @start-webpack-dev-server {
+    default_type text/plain;
+    return 502 "Please start the webpack-dev-server first.";
+  }
+}
 ```

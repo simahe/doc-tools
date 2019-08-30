@@ -92,7 +92,7 @@ $ git tag -a v1.0 -m "version 1.0 released" 1094adb 用-a指定标签名，-m指
 $ git show v0.1 可以看到说明文字
 $ git tag -d v0.1 删除标签
 $ git push origin v1.0 推送某个标签到远程****
-$ git push origin --tags 推送全部尚未推送到远程的本地标签
+$ git push origin --tags 推送全部尚未推送到远程的本地标签合并
 如果标签已经推送到远程，要删除远程标签就麻烦一点
 $ git tag -d v0.9 ，先从本地删除：
 $ git push origin :refs/tags/v0.9 然后，从远程删除。删除命令也是push，但是格式如下：
