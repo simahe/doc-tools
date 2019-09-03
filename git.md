@@ -1,19 +1,37 @@
+## vscode配置git
 
+打开vscode，然后 文件 > 首选项 > 设置 ，然后添加 "git.path"键，值为Git目录下的cmd下的git.exe文件。如： "git.path":"D:/Program Files/Git/cmd/git.exe"
 
-
+# git中ssh与https
 
 ```
-生成新的SSH密钥 C:\Users\EDZ\.ssh
-ssh-keygen -t rsa -b 4096 -C "zhangqianlong@wljs.com"
-Generating public/private rsa key pair.
+1.clone项目:使用ssh方式时，首先你必须是该项目的管理者或拥有者，并且需要配置个人的ssh key。而对于使用https方式来讲，就没有这些要求。
+2.push:在使用ssh方式时，是不需要验证用户名和密码，如果你在配置ssh key时设置了密码，则需要验证密码。而对于使用https方式来讲，每次push都需要验证用户名和密码。
+```
+
+```
+$ git config --global  --list // 查看当前用户(global)配置
+$ git config --system  --list // 查看系统config
+$ git config --local  --list // 查看当前仓库配置信息
+```
+
+# 生成新 SSH 密钥并添加到 ssh-agent
+
+```shell
+$ ssh-keygen -t rsa -b 4096 -C "zhangqianlong@wljs.com"
+生成的SSH密钥地址： C:\Users\EDZ\.ssh
 //config配置
-git config --global user.name "zhangqianlong"
-git config --global user.email "zhangqianlong@wljs.com"
-git clone -b dev-test   https://codec.tudouni.com.cn/future-mall/futureh5.git
+$ git config --global user.name "zhangqianlong"
+$ git config --global user.email "zhangqianlong@wljs.com"
 
-git checkout -b zql
-//打开vscode，然后 文件 > 首选项 > 设置 ，然后添加 "git.path"键，值为Git目录下的cmd下的git.exe文件。如： "git.path":"D:/Program Files/Git/cmd/git.exe"
+$ git clone git@gitlab.weilaijishi.net:future-mall-frontend/h5-client/h5-main.git
+*****提示：Enter passphrase for key '/c/Users/EDZ/.ssh/id_rsa':
+*****输入密码：simahe@#2019
+账号：zhangqianlong@wljs.com
+密码：simahe@#2019
 ```
+
+
 
 ```
 http://localhost:3000/#/root/
@@ -100,6 +118,7 @@ $ git push origin :refs/tags/v0.9 然后，从远程删除。删除命令也是p
 
 
 ===========远程分支操作
+$ git fetch  刷新
 $ git branch -a 查看远程分支
 $ git checkout -b release-log origin/release-log  不行就用下面这个
 $ git branch -r -d origin/zql-test  删除远程分支
@@ -135,6 +154,9 @@ git branch -a 查看分支
   git pull --rebase origin/develop
 
 git checkout -b future-social
+
+
+ git checkout -b feature-lock origin/feature-lock
 ```
 
 

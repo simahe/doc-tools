@@ -58,6 +58,8 @@ sass --watch input.scss:output.css
 
 //如果你有很多的sass文件的目录，你也可以告诉sass监听整个目录：
 sass --watch app/sass:public/stylesheets
+
+sass --watch  assets/scss/:assets/style/ --style compact
 ```
 
 ### 命令行编译配置选项;
@@ -68,6 +70,7 @@ sass --watch app/sass:public/stylesheets
 ```
 //编译格式
 sass --watch input.scss:output.css --style compact
+
 
 //编译添加调试map
 sass --watch input.scss:output.css --sourcemap
