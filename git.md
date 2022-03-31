@@ -42,6 +42,22 @@ http://localhost:3000/#/root/
 
 # git基本操作
 
+- git add 添加文件到暂存区`git add .   `
+- git status 查看仓库当前的状态，显示有变更的文件`git status`
+- git diff 比较文件的不同，即暂存区和工作区的差异。`git diff [file]`
+- git commit 提交暂存区到本地仓库。`git commit -am '修改 hello.php 文件'`
+- git reset 回退版本。`git reset  [HEAD] `
+- git rm 删除工作区文件。`git rm <file>`
+- git mv 移动或重命名工作区文件。`git mv -f [file] [newfile]`
+- git log 查看历史提交记录`git log --oneline`
+- git blame<file>以列表形式查看指定文件的历史修改记录`git blame README `
+- git remote 远程仓库操作,`git remote -v`
+- git fetch 从远程获取代码库`git merge`  `git fetch`
+- git pull 下载远程代码并合并`git pull <远程主机名> <远程分支名>:<本地分支名>`
+- git push 上传远程代码并合并`git push <远程主机名> <本地分支名>:<远程分支名>`
+
+## DEMO
+
 ```
 1、选择一个合适的地方，创建一个空目录
 $ mkdir learngit
@@ -95,7 +111,7 @@ $ git branch 查看当前分支
 ============删除分支
 $ git branch -d zql-test（remotes/origin/分支名） 删除本地分支：
 $ git branch -D zql-test  强制删本地
-$ git push origin --delete origin zql-test 删除远程分支：
+$ git push --delete origin zql-test 删除远程分支：
 ============分支管理策略
 $ git merge --no-ff -m "merge with no-ff" dev
 $ git log --graph --pretty=oneline --abbrev-commit  看看分支历史
@@ -240,4 +256,21 @@ git commit -m "*****"
 git push origin develop
 
 ```
+
+## git提交规范
+
+| **类型** | **描述**                                               |
+| -------- | ------------------------------------------------------ |
+| build    | 编译相关的修改，例如发布版本、对项目构建或者依赖的改动 |
+| chore    | 其他修改, 比如改变构建流程、或者增加依赖库、工具等     |
+| ci       | 持续集成修改                                           |
+| docs     | 文档修改                                               |
+| feat     | 新特性、新功能                                         |
+| fix      | 修改bug                                                |
+| perf     | 优化相关，比如提升性能、体验                           |
+| refactor | 代码重构                                               |
+| revert   | 回滚到上一个版本                                       |
+| style    | 代码格式修改, 注意不是 css 修改                        |
+| test     | 测试用例修改                                           |
+
 
